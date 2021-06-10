@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { isPlatform } from "@ionic/react";
 import {
   Camera,
-  CameraPhoto,
   CameraResultType,
   CameraSource,
   Photo,
@@ -26,20 +25,15 @@ export const usePhotoGallery = () => {
     });
 
     const fileName = `${new Date().getTime()}.jpeg`;
-    const newPhotos: UserPhoto[] = [
-      {
-        filepath: fileName,
-        webviewPath: cameraPhoto.webPath,
-      },
-      ...photos,
-    ];
+    const savedFileImage = await savePicture(cameraPhoto, fileName);
+    const newPhotos: UserPhoto[] = [savedFileImage, ...photos];
     setPhotos(newPhotos);
   };
 
   const savePicture = async (
-    photo: CameraPhoto,
+    photo: Photo,
     fileName: string
-  ): Promise<Photo> => {
+  ): Promise<UserPhoto> => {
     const base64Data = await base64FromPath(photo.webPath!);
     const savedFile = await Filesystem.writeFile({
       path: fileName,
